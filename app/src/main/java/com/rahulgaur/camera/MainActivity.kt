@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
+    private var cameraType = 0
+
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initViews() {
+        binding.cameraSwitchView.setOnClickListener {
+            cameraType = if (cameraType == 0) 1 else 0
+            startCamera()
+        }
+
         binding.cameraCaptureButton.actionListener = object : InstagramVideoButton.ActionListener {
             override fun onCancelled() {
             }
@@ -122,7 +129,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
@@ -167,6 +173,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private fun requestPermission() {
         if (Utility.hasCameraPermissions(this)) {
+            cameraType = 0
             startCamera()
             return
         }
@@ -194,7 +201,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-
     @SuppressLint("RestrictedApi")
     private fun startCamera() {
 
@@ -217,7 +223,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             videoCapture = VideoCapture.Builder().build()
 
             // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            val cameraSelector = if (cameraType == 0)
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            else
+                CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 // Unbind use cases before rebinding
