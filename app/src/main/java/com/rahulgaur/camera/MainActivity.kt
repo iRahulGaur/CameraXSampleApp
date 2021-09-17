@@ -1,4 +1,4 @@
-package com.clint.sharechatcamerasampleapp
+package com.rahulgaur.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.clint.sharechatcamerasampleapp.Constants.FILENAME_FORMAT
-import com.clint.sharechatcamerasampleapp.Constants.REQUEST_CODE_CAMERA_PERMISSION
-import com.clint.sharechatcamerasampleapp.Constants.TAG
-import com.clint.sharechatcamerasampleapp.databinding.ActivityMainBinding
 import com.jackandphantom.instagramvideobutton.InstagramVideoButton
+import com.rahulgaur.camera.Constants.FILENAME_FORMAT
+import com.rahulgaur.camera.Constants.REQUEST_CODE_CAMERA_PERMISSION
+import com.rahulgaur.camera.Constants.TAG
+import com.rahulgaur.camera.databinding.ActivityMainBinding
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
@@ -25,9 +25,9 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-//typealias LumaListener = (luma: Double) -> Unit
-
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var imageCapture: ImageCapture? = null
     private var videoCapture: VideoCapture? = null
@@ -35,24 +35,30 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
-    private lateinit var binding: ActivityMainBinding
-
-
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        requestPermission()
 
+        requestPermission()
+        initClasses()
+        initViews()
+
+    }
+
+    private fun initClasses() {
+        outputDirectory = getOutputDirectory()
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    private fun initViews() {
         binding.cameraCaptureButton.actionListener = object : InstagramVideoButton.ActionListener {
             override fun onCancelled() {
-                TODO("Not yet implemented")
             }
 
             override fun onDurationTooShortError() {
-                TODO("Not yet implemented")
             }
 
             override fun onEndRecord() {
@@ -68,10 +74,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             }
 
         }
-
-        outputDirectory = getOutputDirectory()
-
-        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     @SuppressLint("RestrictedApi")
@@ -93,7 +95,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Create output options object which contains file + metadata
         val outputOptions = VideoCapture.OutputFileOptions.Builder(videoFile).build()
 
-
         videoCapture?.startRecording(
             outputOptions,
             ContextCompat.getMainExecutor(this),
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 override fun onError(
                     videoCaptureError: Int,
                     message: String,
-                    cause: Throwable?
+                    cause: Throwable?,
                 ) {
                     Log.i(TAG, "Video Error: $message")
                 }
@@ -118,7 +119,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 }
 
             })
-
 
     }
 
@@ -211,22 +211,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
-
             imageCapture = ImageCapture.Builder()
                 .build()
 
-
-            videoCapture = VideoCapture.Builder().build()/*.also {
-                it.setTargetRotation(binding.viewFinder.display.rotation)
-            }*/
-
-            /*val imageAnalyzer = ImageAnalysis.Builder()
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                        Log.d(TAG, "Average luminosity: $luma")
-                    })
-                }*/
+            videoCapture = VideoCapture.Builder().build()
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
@@ -234,11 +222,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                /*cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer, imageCapture, videoCapture
-                )*/
 
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture, videoCapture
@@ -254,7 +237,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
@@ -277,28 +260,4 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         cameraExecutor.shutdown()
     }
 
-
 }
-
-
-/*private class LuminosityAnalyzer(private val listener: LumaListener) : ImageAnalysis.Analyzer {
-
-    private fun ByteBuffer.toByteArray(): ByteArray {
-        rewind()    // Rewind the buffer to zero
-        val data = ByteArray(remaining())
-        get(data)   // Copy the buffer into a byte array
-        return data // Return the byte array
-    }
-
-    override fun analyze(image: ImageProxy) {
-
-        val buffer = image.planes[0].buffer
-        val data = buffer.toByteArray()
-        val pixels = data.map { it.toInt() and 0xFF }
-        val luma = pixels.average()
-
-        listener(luma)
-
-        image.close()
-    }
-}*/

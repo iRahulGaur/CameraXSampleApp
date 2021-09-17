@@ -1,4 +1,4 @@
-package com.clint.sharechatcamerasampleapp
+package com.rahulgaur.camera
 
 import android.Manifest
 import android.content.Context
@@ -19,17 +19,4 @@ object Utility {
                 Manifest.permission.CAMERA
             )
         }
-
-    /*fun hasRecordAudioPermissions(context: Context) =
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            EasyPermissions.hasPermissions(
-                context,
-                Manifest.permission.RECORD_AUDIO
-            )
-        } else {
-            EasyPermissions.hasPermissions(
-                context,
-                Manifest.permission.RECORD_AUDIO
-            )
-        }*/
 }

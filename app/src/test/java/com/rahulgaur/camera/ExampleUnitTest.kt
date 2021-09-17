@@ -1,4 +1,4 @@
-package com.clint.sharechatcamerasampleapp
+package com.rahulgaur.camera
 
 import org.junit.Test
 

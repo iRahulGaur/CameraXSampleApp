@@ -6,40 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!--<com.iammert.library.cameravideobuttonlib.CameraVideoButton
-    android:id="@+id/button"
-    android:layout_width="120dp"
-    android:layout_height="120dp"
-    app:cvb_recording_color="#D438A2"/>-->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.jackandphantom.instagramvideobutton.InstagramVideoButton
         android:id="@+id/camera_capture_button"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        app:enablePhotoTaking="true"
         android:elevation="2dp"
         android:scaleType="fitCenter"
+        app:enablePhotoTaking="true"
         app:enableVideoRecording="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:progressColor="#FF5722" />
 
-    <!--<Button
-        android:id="@+id/camera_capture_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="50dp"
-        android:elevation="2dp"
-        android:scaleType="fitCenter"
-        android:text="@string/take_picture"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />-->
-
-    <androidx.camera.view.PreviewView
-        android:id="@+id/viewFinder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <ImageView
+        android:id="@+id/cameraSwitchView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:contentDescription="@string/desc"
+        android:src="@drawable/camera_switch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
